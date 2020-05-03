@@ -1,0 +1,57 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+AnimateDemo
+</name>
+</assembly>
+<members>
+<member name="T:AnimateDemo.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:AnimateDemo.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:AnimateDemo.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="P:AnimateDemo.My.Resources.Resources.EdProfile400x400">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:AnimateDemo.My.Resources.Resources.iconmonstr_school_22_240">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:AnimateDemo.My.Resources.Resources.iconmonstr_soccer_1_32">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:AnimateDemo.My.Resources.Resources.iconmonstr_volleyball_2_32">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="M:AnimateDemo.frmMiniMap.OverlayOnBackgroundImage(System.Drawing.Bitmap,System.Drawing.Point)">
+ <summary>
+ Used to set any static images that we won't want to draw very often. This will help us cut down on the number of draws that we have to do. 
+ These are the kinds of things that maybe change once in a while (like wafer size), not the things we want to track in real time (like chuck position). 
+ </summary>
+</member>
+<member name="M:AnimateDemo.frmMiniMap.HandleToolUpdatePosition(System.Object,AnimateDemo.ToolPositionState)">
+ <summary>
+ Used to update the position of things that we do want to update all the time. Chuck position, etc.
+ </summary>
+</member>
+</members>
+</doc>

@@ -1,0 +1,13 @@
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\bin\Debug\AnimateDemo.exe.config
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\bin\Debug\AnimateDemo.exe
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\bin\Debug\AnimateDemo.pdb
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\bin\Debug\AnimateDemo.xml
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.vbprojAssemblyReference.cache
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.frmMain.resources
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.frmMiniMap.resources
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.Resources.resources
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.vbproj.GenerateResource.cache
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.vbproj.CoreCompileInputs.cache
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.exe
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.xml
+C:\Development\XCeleprint\AnimateDemo\AnimateDemo\obj\Debug\AnimateDemo.pdb
