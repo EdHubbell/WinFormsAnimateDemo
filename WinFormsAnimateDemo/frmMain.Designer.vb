@@ -29,6 +29,7 @@ Partial Class frmMain
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.txtXPositionDelta = New System.Windows.Forms.TextBox()
+        Me.btnLaunchRxMiniMap = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'btnLaunchMiniMap
@@ -92,11 +93,21 @@ Partial Class frmMain
         Me.txtXPositionDelta.TabIndex = 5
         Me.txtXPositionDelta.Text = ".2"
         '
+        'btnLaunchRxMiniMap
+        '
+        Me.btnLaunchRxMiniMap.Location = New System.Drawing.Point(311, 49)
+        Me.btnLaunchRxMiniMap.Name = "btnLaunchRxMiniMap"
+        Me.btnLaunchRxMiniMap.Size = New System.Drawing.Size(159, 23)
+        Me.btnLaunchRxMiniMap.TabIndex = 7
+        Me.btnLaunchRxMiniMap.Text = "Launch RxMiniMap"
+        Me.btnLaunchRxMiniMap.UseVisualStyleBackColor = True
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(644, 399)
+        Me.Controls.Add(Me.btnLaunchRxMiniMap)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.txtXPositionDelta)
         Me.Controls.Add(Me.Label1)
@@ -119,4 +130,5 @@ Partial Class frmMain
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents txtXPositionDelta As TextBox
+    Friend WithEvents btnLaunchRxMiniMap As Button
 End Class
