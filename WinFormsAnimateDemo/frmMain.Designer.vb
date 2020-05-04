@@ -30,6 +30,11 @@ Partial Class frmMain
         Me.Label2 = New System.Windows.Forms.Label()
         Me.txtXPositionDelta = New System.Windows.Forms.TextBox()
         Me.btnLaunchRxMiniMap = New System.Windows.Forms.Button()
+        Me.lblMouseFast = New System.Windows.Forms.Label()
+        Me.lblMouseMedium = New System.Windows.Forms.Label()
+        Me.lblMouseSlow = New System.Windows.Forms.Label()
+        Me.lblMouseEvent = New System.Windows.Forms.Label()
+        Me.btnAddRxMouse = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'btnLaunchMiniMap
@@ -102,11 +107,61 @@ Partial Class frmMain
         Me.btnLaunchRxMiniMap.Text = "Launch RxMiniMap"
         Me.btnLaunchRxMiniMap.UseVisualStyleBackColor = True
         '
+        'lblMouseFast
+        '
+        Me.lblMouseFast.AutoSize = True
+        Me.lblMouseFast.Location = New System.Drawing.Point(12, 310)
+        Me.lblMouseFast.Name = "lblMouseFast"
+        Me.lblMouseFast.Size = New System.Drawing.Size(69, 13)
+        Me.lblMouseFast.TabIndex = 8
+        Me.lblMouseFast.Text = "Mouse Fast:"
+        '
+        'lblMouseMedium
+        '
+        Me.lblMouseMedium.AutoSize = True
+        Me.lblMouseMedium.Location = New System.Drawing.Point(12, 335)
+        Me.lblMouseMedium.Name = "lblMouseMedium"
+        Me.lblMouseMedium.Size = New System.Drawing.Size(71, 13)
+        Me.lblMouseMedium.TabIndex = 9
+        Me.lblMouseMedium.Text = "Mouse Med:"
+        '
+        'lblMouseSlow
+        '
+        Me.lblMouseSlow.AutoSize = True
+        Me.lblMouseSlow.Location = New System.Drawing.Point(12, 360)
+        Me.lblMouseSlow.Name = "lblMouseSlow"
+        Me.lblMouseSlow.Size = New System.Drawing.Size(73, 13)
+        Me.lblMouseSlow.TabIndex = 10
+        Me.lblMouseSlow.Text = "Mouse Slow:"
+        '
+        'lblMouseEvent
+        '
+        Me.lblMouseEvent.AutoSize = True
+        Me.lblMouseEvent.Location = New System.Drawing.Point(12, 283)
+        Me.lblMouseEvent.Name = "lblMouseEvent"
+        Me.lblMouseEvent.Size = New System.Drawing.Size(76, 13)
+        Me.lblMouseEvent.TabIndex = 11
+        Me.lblMouseEvent.Text = "Mouse Event:"
+        '
+        'btnAddRxMouse
+        '
+        Me.btnAddRxMouse.Location = New System.Drawing.Point(343, 310)
+        Me.btnAddRxMouse.Name = "btnAddRxMouse"
+        Me.btnAddRxMouse.Size = New System.Drawing.Size(159, 23)
+        Me.btnAddRxMouse.TabIndex = 12
+        Me.btnAddRxMouse.Text = "Add Rx Mouse Events"
+        Me.btnAddRxMouse.UseVisualStyleBackColor = True
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(644, 399)
+        Me.Controls.Add(Me.btnAddRxMouse)
+        Me.Controls.Add(Me.lblMouseEvent)
+        Me.Controls.Add(Me.lblMouseSlow)
+        Me.Controls.Add(Me.lblMouseMedium)
+        Me.Controls.Add(Me.lblMouseFast)
         Me.Controls.Add(Me.btnLaunchRxMiniMap)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.txtXPositionDelta)
@@ -131,4 +186,9 @@ Partial Class frmMain
     Friend WithEvents Label2 As Label
     Friend WithEvents txtXPositionDelta As TextBox
     Friend WithEvents btnLaunchRxMiniMap As Button
+    Friend WithEvents lblMouseFast As Label
+    Friend WithEvents lblMouseMedium As Label
+    Friend WithEvents lblMouseSlow As Label
+    Friend WithEvents lblMouseEvent As Label
+    Friend WithEvents btnAddRxMouse As Button
 End Class

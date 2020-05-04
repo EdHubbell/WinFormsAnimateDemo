@@ -8,6 +8,7 @@ Imports System.Reactive.Linq
 Imports System.Reactive.Subjects
 Imports System.Timers
 Imports System.Collections.Concurrent
+Imports System.Reactive
 
 
 Public Class frmMain
@@ -132,5 +133,80 @@ Public Class frmMain
     Private Sub btnLaunchRxMiniMap_Click(sender As Object, e As EventArgs) Handles btnLaunchRxMiniMap.Click
         Dim frmMap = New frmRxMiniMap(observableToolPositionState)
         frmMap.Show()
+    End Sub
+
+    Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+
+        'Dim slowMouse = Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
+        '    Sub(ev) AddHandler Me.MouseMove, ev,
+        '    Sub(ev) RemoveHandler Me.MouseMove, ev).
+        '    Select(Function(x) x.EventArgs).Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Slw: {0},{1}", x.X, x.Y))
+
+        'Dim medMouse As IObservable(Of EventPattern(Of MouseEventArgs)) =
+        '    Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs) _
+        '(Sub(h) AddHandler MouseMove, h,
+        ' Sub(h) RemoveHandler MouseMove, h) _
+        ' .Select(Of EventPattern(Of MouseEventArgs))(Function(x) x.EventArgs) _
+        ' .Sample(TimeSpan.FromMilliseconds(250)) _
+        ' .Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", x.EventArgs.X, x.EventArgs.Y)
+
+        'Dim slowMouse As IObservable(Of EventPattern(Of MouseEventArgs)) = Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(Me, "MouseMove")
+
+        'Dim slowMouse As IObservable(Of EventPattern(Of MouseEventArgs)) = Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)()
+
+        '(Sub(h) AddHandler Me.MouseMove, h,
+        ' Sub(h) RemoveHandler Me.MouseMove, h)
+
+        'Dim slowMousePos = slowMouse.Select(Function(x) x.EventArgs)
+        'slowMousePos.Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Slow: {0},{1}", x.X, x.Y))
+
+
+        '.Select(Of MouseEventArgs)(Function(x) x.EventArgs) _
+        ' .Sample(TimeSpan.FromMilliseconds(250)) _
+        ' .Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", x.EventArgs.X, x.EventArgs.Y)
+
+
+
+
+    End Sub
+
+    Private Sub frmMain_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
+        lblMouseEvent.Text = String.Format("Mouse Event: {0},{1}", e.X, e.Y)
+    End Sub
+
+
+    Private Sub btnAddRxMouse_Click(sender As Object, e As EventArgs) Handles btnAddRxMouse.Click
+
+        ' Abandon all hope of finding VB samples of this type of thing. It's all C#, all the way. These work, tho. That's a start.
+
+        Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
+            Sub(handler As MouseEventHandler) AddHandler Me.MouseMove, handler,
+            Sub(handler As MouseEventHandler) RemoveHandler Me.MouseMove, handler).
+            Select(Function(x) x.EventArgs).
+            Subscribe(Sub(x)
+                          Me.BeginInvoke(Sub() lblMouseFast.Text = String.Format("Mouse Fast: {0},{1}", x.X, x.Y))
+                      End Sub)
+
+
+        Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
+            Sub(handler As MouseEventHandler) AddHandler Me.MouseMove, handler,
+            Sub(handler As MouseEventHandler) RemoveHandler Me.MouseMove, handler).
+            Select(Function(x) x.EventArgs).
+            Sample(TimeSpan.FromMilliseconds(250)).
+            Subscribe(Sub(x)
+                          Me.BeginInvoke(Sub() lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", x.X, x.Y))
+                      End Sub)
+
+
+        Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
+            Sub(handler As MouseEventHandler) AddHandler Me.MouseMove, handler,
+            Sub(handler As MouseEventHandler) RemoveHandler Me.MouseMove, handler).
+            Select(Function(x) x.EventArgs).
+            Sample(TimeSpan.FromMilliseconds(1000)).
+            Subscribe(Sub(x)
+                          Me.BeginInvoke(Sub() lblMouseSlow.Text = String.Format("Mouse Slow: {0},{1}", x.X, x.Y))
+                      End Sub)
+
     End Sub
 End Class
