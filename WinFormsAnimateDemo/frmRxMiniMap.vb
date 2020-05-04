@@ -5,6 +5,8 @@ Imports System.Drawing
 
 
 Public Class frmRxMiniMap
+    Implements IObserver(Of ToolPositionState)
+
     Dim bFormBusy As Boolean = False
 
     Dim bmpBackground As Bitmap = My.Resources.EdProfile400x400
@@ -16,12 +18,13 @@ Public Class frmRxMiniMap
 
     Dim oToolPosState As IObservable(Of ToolPositionState)
 
+
     Public Sub New(oToolPositionEventObservable As IObservable(Of ToolPositionState))
 
         ' This call is required by the designer.
         InitializeComponent()
 
-        oToolPositionEventObservable.Subscribe(Sub(h) HandleToolUpdatePosition(h))
+        oToolPositionEventObservable.Subscribe(Me)
 
         ' Add any initialization after the InitializeComponent() call.
         'AddHandler oToolPositionEventPublisher.ToolPositionStateChange, AddressOf HandleToolUpdatePosition
@@ -61,47 +64,6 @@ Public Class frmRxMiniMap
     End Sub
 
 
-    ''' <summary>
-    ''' Used to update the position of things that we do want to update all the time. Chuck position, etc.
-    ''' </summary>
-    Public Sub HandleToolUpdatePosition(sender As Object, oToolPositionState As ToolPositionState)
-
-        If bFormBusy Then
-            ' If we're already busy, get out of here. You can add logging or a breakpoint here to see how often it happens. On some level, it will 
-            ' always come down to processing speed. 
-            Exit Sub
-        End If
-
-        ' We could add a check here for objectPosition1 and objectPosition2 - If all the drawn objects aren't changing position, then 
-        ' don't bother redrawing the bitmap. Just depends on how long the check takes vs the bitmap redraw.
-
-
-        bFormBusy = True
-
-        Try
-
-            ' First, copy the background image into a new bitmap.
-            Dim bmpBackgroundCopy As Bitmap = New Bitmap(bmpBackground)
-
-            ' Then draw the movable things onto the background image. 
-            Using g As Graphics = Graphics.FromImage(bmpBackgroundCopy)
-                g.DrawImage(bmpVolleyBall, oToolPositionState.Object1Position)
-                g.DrawImage(bmpSoccerBall, oToolPositionState.Object2Position)
-            End Using
-
-            ' Then reset the image in the picturebox.
-            pbxImage.Image = bmpBackgroundCopy
-
-        Catch ex As Exception
-
-        Finally
-            bFormBusy = False
-        End Try
-
-
-    End Sub
-
-
     Private Sub frmMiniMap_Resize(sender As Object, e As EventArgs) Handles Me.Resize
 
         bFormBusy = True
@@ -124,5 +86,47 @@ Public Class frmRxMiniMap
 
         End Try
 
+    End Sub
+
+    Public Sub OnNext(value As ToolPositionState) Implements IObserver(Of ToolPositionState).OnNext
+
+        If bFormBusy Then
+            ' If we're already busy, get out of here. You can add logging or a breakpoint here to see how often it happens. On some level, it will 
+            ' always come down to processing speed. 
+            Exit Sub
+        End If
+
+        ' We could add a check here for objectPosition1 and objectPosition2 - If all the drawn objects aren't changing position, then 
+        ' don't bother redrawing the bitmap. Just depends on how long the check takes vs the bitmap redraw.
+        bFormBusy = True
+
+        Try
+
+            ' First, copy the background image into a new bitmap.
+            Dim bmpBackgroundCopy As Bitmap = New Bitmap(bmpBackground)
+
+            ' Then draw the movable things onto the background image. 
+            Using g As Graphics = Graphics.FromImage(bmpBackgroundCopy)
+                g.DrawImage(bmpVolleyBall, value.Object1Position)
+                g.DrawImage(bmpSoccerBall, value.Object2Position)
+            End Using
+
+            ' Then reset the image in the picturebox.
+            pbxImage.Image = bmpBackgroundCopy
+
+        Catch ex As Exception
+
+        Finally
+            bFormBusy = False
+        End Try
+
+    End Sub
+
+    Public Sub OnError([error] As Exception) Implements IObserver(Of ToolPositionState).OnError
+        Throw New NotImplementedException()
+    End Sub
+
+    Public Sub OnCompleted() Implements IObserver(Of ToolPositionState).OnCompleted
+        Throw New NotImplementedException()
     End Sub
 End Class

@@ -7,6 +7,8 @@ Imports System.Reactive.Disposables
 Imports System.Reactive.Linq
 Imports System.Reactive.Subjects
 Imports System.Timers
+Imports System.Collections.Concurrent
+
 
 Public Class frmMain
     Implements IToolPositionStateEventSender
@@ -18,15 +20,8 @@ Public Class frmMain
 
     Dim observableToolPositionState As IObservable(Of ToolPositionState)
 
-    '    Dim ToolPositionStateObservable As New Subject(Of ToolPositionState)()
+    Private _subscribed As List(Of IObserver(Of ToolPositionState)) = New List(Of IObserver(Of ToolPositionState))()
 
-
-    Dim subscribe As Func(Of IObserver(Of ToolPositionState), IDisposable)
-    Dim returnValue As IObservable(Of ToolPositionState)
-
-    '    Dim ToolPositionStateObservable As IObservable(Of ToolPositionState) = Observable.Create(Of ToolPositionState)(Func(Of IObserver(Of ToolPositionState), IDisposable))
-
-    '    Dim ToolPositionStateObservable As IObservable(Of ToolPositionState) = Observable.Create(CType(TicketFactory.TicketSubscribe, Func(Of IObserver(Of ToolPositionState), IDisposable)))
 
     Public Sub New()
 
@@ -34,16 +29,29 @@ Public Class frmMain
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        returnValue = Observable.Create(subscribe)
+        'observableToolPositionState = Observable.Return(Of ToolPositionState)(New ToolPositionState(New PointF(1, 1), New PointF(2, 2)))
+
+        'observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(Of IObserver(Of ToolPositionState), IDisposable)())()()
+
+        'observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(ByVal observer As IObserver(Of ToolPositionState))
+        '                                                                          Return Disposable.Create(Sub() Debug.WriteLine("Observer has unsubscribed"))
+        '                                                                      End Function)
+
+        observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(o)
+                                                                                  _subscribed.Add(o)
+                                                                                  Return Function() _subscribed.Remove(o)
+                                                                              End Function)
+
+
+        'observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(ByVal observer As IObserver(Of ToolPositionState))
+        '                                                                          observer.OnNext(New ToolPositionState(New PointF(1, 1), New PointF(2, 2)))
+        '                                                                          observer.OnCompleted()
+        '                                                                          Return Disposable.Create(Sub() Debug.WriteLine("Observer has unsubscribed"))
+        '                                                                      End Function)
 
     End Sub
 
-    Private Sub btnLaunchMiniMap_Click(sender As Object, e As EventArgs) Handles btnLaunchMiniMap.Click
 
-        Dim frmMap = New frmMiniMap(Me)
-        frmMap.Show()
-
-    End Sub
 
     Private Sub btnSendData_Click(sender As Object, e As EventArgs) Handles btnSendDataStart.Click
 
@@ -63,26 +71,22 @@ Public Class frmMain
         '(Sub(h) AddHandler oTimer.Elapsed, h,
         ' Sub(h) RemoveHandler oTimer.Elapsed, h)
 
-        Dim timerTicks As IObservable(Of Reactive.EventPattern(Of ElapsedEventArgs)) =
-            Observable.FromEventPattern(Of ElapsedEventHandler, ElapsedEventArgs) _
-        (Sub(h) AddHandler oTimer.Elapsed, h,
-         Sub(h) RemoveHandler oTimer.Elapsed, h)
-
-        returnValue = Observable.Create(subscribe)
-
+        'Dim timerTicks As IObservable(Of Reactive.EventPattern(Of ElapsedEventArgs)) =
+        '    Observable.FromEventPattern(Of ElapsedEventHandler, ElapsedEventArgs) _
+        '(Sub(h) AddHandler oTimer.Elapsed, h,
+        ' Sub(h) RemoveHandler oTimer.Elapsed, h)
 
         oTimer.Start()
 
-
     End Sub
 
-    Private Function GetToolStateObservable() As IObservable(Of ToolPositionState)
-        Return Observable.Create(Of ToolPositionState)(Function(ByVal observer As IObserver(Of ToolPositionState))
-                                                           observer.OnNext(New ToolPositionState(New PointF(1, 1), New PointF(2, 2)))
-                                                           observer.OnCompleted()
-                                                           Return Disposable.Create(Sub() Debug.WriteLine("Observer has unsubscribed"))
-                                                       End Function)
-    End Function
+    'Private Function GetToolStateObservable() As IObservable(Of ToolPositionState)
+    '    Return Observable.Create(Of ToolPositionState)(Function(ByVal observer As IObserver(Of ToolPositionState))
+    '                                                       observer.OnNext(New ToolPositionState(New PointF(1, 1), New PointF(2, 2)))
+    '                                                       observer.OnCompleted()
+    '                                                       Return Disposable.Create(Sub() Debug.WriteLine("Observer has unsubscribed"))
+    '                                                   End Function)
+    'End Function
 
     Private Sub HandleTimer(source As Object, e As ElapsedEventArgs)
 
@@ -100,11 +104,17 @@ Public Class frmMain
 
         RaiseEvent ToolPositionStateChange(Me, oToolPositionState)
 
-        returnValue.Append(oToolPositionState)
-
-
+        ' This is a problem here, because _subscribed isn't type safe. 
+        ' In any case, this raises a series of events, which 
+        ' seems more complex than just raising one. Still working on 
+        ' understanding reactive, observable, etc. Not many examples in VB - Mostly C#. 
+        For Each o In _subscribed
+            o.OnNext(oToolPositionState)
+        Next
 
     End Sub
+
+
 
     Private Sub btnSendDataEnd_Click(sender As Object, e As EventArgs) Handles btnSendDataEnd.Click
         oTimer.Stop()
@@ -114,11 +124,13 @@ Public Class frmMain
 
     End Sub
 
-    Private Sub btnLaunchRxMiniMap_Click(sender As Object, e As EventArgs) Handles btnLaunchRxMiniMap.Click
-
-        Dim frmMap = New frmRxMiniMap(Me)
+    Private Sub btnLaunchMiniMap_Click(sender As Object, e As EventArgs) Handles btnLaunchMiniMap.Click
+        Dim frmMap = New frmMiniMap(Me)
         frmMap.Show()
-        ' 
+    End Sub
 
+    Private Sub btnLaunchRxMiniMap_Click(sender As Object, e As EventArgs) Handles btnLaunchRxMiniMap.Click
+        Dim frmMap = New frmRxMiniMap(observableToolPositionState)
+        frmMap.Show()
     End Sub
 End Class
