@@ -50,6 +50,8 @@ Public Class frmMain
         '                                                                          Return Disposable.Create(Sub() Debug.WriteLine("Observer has unsubscribed"))
         '                                                                      End Function)
 
+        'Dim uiSchedDispatcher As IScheduler = Scheduler.Dispatcher
+
     End Sub
 
 
@@ -167,6 +169,7 @@ Public Class frmMain
         ' .Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", x.EventArgs.X, x.EventArgs.Y)
 
 
+        ' Reactive.MainThreadScheduler = Scheduler.CurrentThread
 
 
     End Sub
@@ -183,29 +186,32 @@ Public Class frmMain
         Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
             Sub(handler As MouseEventHandler) AddHandler Me.MouseMove, handler,
             Sub(handler As MouseEventHandler) RemoveHandler Me.MouseMove, handler).
-            Select(Function(x) x.EventArgs).
-            Subscribe(Sub(x)
-                          Me.BeginInvoke(Sub() lblMouseFast.Text = String.Format("Mouse Fast: {0},{1}", x.X, x.Y))
+            Select(Function(oEventPattern) oEventPattern.EventArgs).
+            ObserveOn(Me).  ' Note that the order here is important, which was not expected. Also note that OberveOnDispatch and ObserveOn(RxApp.MainThreadScheduler) aren't really available
+            Subscribe(Sub(oMouseEventArgs)
+                          lblMouseFast.Text = String.Format("Mouse Fast: {0},{1}", oMouseEventArgs.X, oMouseEventArgs.Y)
                       End Sub)
 
 
         Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
             Sub(handler As MouseEventHandler) AddHandler Me.MouseMove, handler,
             Sub(handler As MouseEventHandler) RemoveHandler Me.MouseMove, handler).
-            Select(Function(x) x.EventArgs).
+            Select(Function(oEventPattern) oEventPattern.EventArgs).
             Sample(TimeSpan.FromMilliseconds(250)).
-            Subscribe(Sub(x)
-                          Me.BeginInvoke(Sub() lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", x.X, x.Y))
+            ObserveOn(Me).  ' Note that the order here is important, which was not expected. Also note that OberveOnDispatch and ObserveOn(RxApp.MainThreadScheduler) aren't really available
+            Subscribe(Sub(oMouseEventArgs)
+                          lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", oMouseEventArgs.X, oMouseEventArgs.Y)
                       End Sub)
 
 
         Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
             Sub(handler As MouseEventHandler) AddHandler Me.MouseMove, handler,
             Sub(handler As MouseEventHandler) RemoveHandler Me.MouseMove, handler).
-            Select(Function(x) x.EventArgs).
+            Select(Function(oEventPattern) oEventPattern.EventArgs).
             Sample(TimeSpan.FromMilliseconds(1000)).
-            Subscribe(Sub(x)
-                          Me.BeginInvoke(Sub() lblMouseSlow.Text = String.Format("Mouse Slow: {0},{1}", x.X, x.Y))
+            ObserveOn(Me).
+            Subscribe(Sub(oMouseEventArgs)
+                          lblMouseSlow.Text = String.Format("Mouse Slow: {0},{1}", oMouseEventArgs.X, oMouseEventArgs.Y)
                       End Sub)
 
     End Sub
