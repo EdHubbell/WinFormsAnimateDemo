@@ -183,11 +183,17 @@ Public Class frmMain
 
         ' Abandon all hope of finding VB samples of this type of thing. It's all C#, all the way. These work, tho. That's a start.
 
+        ' Note that the order of operations here is important, which was not expected.
+        ' The .ObserveOn operator has to happen after .Sample
+        ' ObserveOnDispatcher() will yield exception 'The current thread has no Dispatcher associated with it.'
+        ' ObserveOn(RxApp.MainThreadScheduler) isn't really available.
+        ' Without the ObserveOn, you'll need to call Invoke to get onto the UI thread in order to change the label.
+
         Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
             Sub(handler As MouseEventHandler) AddHandler Me.MouseMove, handler,
             Sub(handler As MouseEventHandler) RemoveHandler Me.MouseMove, handler).
             Select(Function(oEventPattern) oEventPattern.EventArgs).
-            ObserveOn(Me).  ' Note that the order here is important, which was not expected. Also note that OberveOnDispatch and ObserveOn(RxApp.MainThreadScheduler) aren't really available
+            ObserveOn(Me).
             Subscribe(Sub(oMouseEventArgs)
                           lblMouseFast.Text = String.Format("Mouse Fast: {0},{1}", oMouseEventArgs.X, oMouseEventArgs.Y)
                       End Sub)
@@ -198,7 +204,7 @@ Public Class frmMain
             Sub(handler As MouseEventHandler) RemoveHandler Me.MouseMove, handler).
             Select(Function(oEventPattern) oEventPattern.EventArgs).
             Sample(TimeSpan.FromMilliseconds(250)).
-            ObserveOn(Me).  ' Note that the order here is important, which was not expected. Also note that OberveOnDispatch and ObserveOn(RxApp.MainThreadScheduler) aren't really available
+            ObserveOn(Me).
             Subscribe(Sub(oMouseEventArgs)
                           lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", oMouseEventArgs.X, oMouseEventArgs.Y)
                       End Sub)
@@ -211,6 +217,7 @@ Public Class frmMain
             Sample(TimeSpan.FromMilliseconds(1000)).
             ObserveOn(Me).
             Subscribe(Sub(oMouseEventArgs)
+                          'Raise 1SecondEvent
                           lblMouseSlow.Text = String.Format("Mouse Slow: {0},{1}", oMouseEventArgs.X, oMouseEventArgs.Y)
                       End Sub)
 
