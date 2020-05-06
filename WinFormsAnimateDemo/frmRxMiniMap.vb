@@ -1,8 +1,10 @@
 ﻿Option Explicit On
 Option Strict On
 
+Imports System.ComponentModel
 Imports System.Drawing
-
+Imports System.Reactive.Disposables
+Imports System.Reactive.Subjects
 
 Public Class frmRxMiniMap
     Implements IObserver(Of ToolPositionState)
@@ -16,7 +18,9 @@ Public Class frmRxMiniMap
     Dim bmpVolleyBall As Bitmap = My.Resources.iconmonstr_volleyball_2_32
     Dim bmpSoccerBall As Bitmap = My.Resources.iconmonstr_soccer_1_32
 
+    ' This could also be configured as a Subject, but IObservable is a little bit lighter and has all the features we need here. 
     Dim oToolPosState As IObservable(Of ToolPositionState)
+    Dim oToolStateSubscription As IDisposable
 
 
     Public Sub New(oToolPositionEventObservable As IObservable(Of ToolPositionState))
@@ -24,10 +28,10 @@ Public Class frmRxMiniMap
         ' This call is required by the designer.
         InitializeComponent()
 
-        oToolPositionEventObservable.Subscribe(Me)
+        oToolPosState = oToolPositionEventObservable
 
-        ' Add any initialization after the InitializeComponent() call.
-        'AddHandler oToolPositionEventPublisher.ToolPositionStateChange, AddressOf HandleToolUpdatePosition
+        oToolStateSubscription = oToolPosState.Subscribe(Me)
+
     End Sub
 
     Private Sub frmMiniMap_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -128,5 +132,11 @@ Public Class frmRxMiniMap
 
     Public Sub OnCompleted() Implements IObserver(Of ToolPositionState).OnCompleted
         Throw New NotImplementedException()
+    End Sub
+
+    Private Sub frmRxMiniMap_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        ' This is akin to RemoveHandler. Disposing of the subscription causes the number of observers in the 
+        ' subject to decrement.
+        oToolStateSubscription.Dispose()
     End Sub
 End Class

@@ -1,6 +1,7 @@
 ﻿Option Explicit On
 Option Strict On
 
+Imports System.ComponentModel
 Imports System.Drawing
 
 
@@ -14,13 +15,16 @@ Public Class frmMiniMap
     Dim bmpVolleyBall As Bitmap = My.Resources.iconmonstr_volleyball_2_32
     Dim bmpSoccerBall As Bitmap = My.Resources.iconmonstr_soccer_1_32
 
-    Public Sub New(oToolPositionEventPublisher As IToolPositionStateEventSender)
+    Dim toolPositionStateEventSender As IToolPositionStateEventSender
+
+    Public Sub New(oToolPositionStateEventSender As IToolPositionStateEventSender)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        AddHandler oToolPositionEventPublisher.ToolPositionStateChange, AddressOf HandleToolUpdatePosition
+        toolPositionStateEventSender = oToolPositionStateEventSender
+        AddHandler toolPositionStateEventSender.ToolPositionStateChange, AddressOf HandleToolUpdatePosition
     End Sub
 
     Private Sub frmMiniMap_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -120,5 +124,10 @@ Public Class frmMiniMap
 
         End Try
 
+    End Sub
+
+    Private Sub frmMiniMap_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        ' Should remove handler when the window closes.
+        RemoveHandler toolPositionStateEventSender.ToolPositionStateChange, AddressOf HandleToolUpdatePosition
     End Sub
 End Class

@@ -17,11 +17,18 @@ Public Class frmMain
     Dim oTimer As Timer
 
     Dim dblXPos As Double = 0
+
+    ' 2 different ways to communicate to the other form. Either via events, or via iObservables'
+    ' There don't seem to be any real difference in performance (at least in this app). 
+
     Public Event ToolPositionStateChange(sender As Object, state As ToolPositionState) Implements IToolPositionStateEventSender.ToolPositionStateChange
 
-    Dim observableToolPositionState As IObservable(Of ToolPositionState)
+    '    Dim observableToolPositionState As IObservable(Of ToolPositionState)
+    Dim observableToolPositionState As New Subject(Of ToolPositionState)
 
-    Private _subscribed As List(Of IObserver(Of ToolPositionState)) = New List(Of IObserver(Of ToolPositionState))()
+    ' Thanks to this site, for pointing out that subject has a list of observers already in it. 
+    ' So there is no threadsafe observer list implementation needed. 
+    ' https://blogs.endjin.com/2018/11/understanding-rx-making-interfaces-subscribing-And-other-subjects-click/
 
 
     Public Sub New()
@@ -29,28 +36,10 @@ Public Class frmMain
         ' This call is required by the designer.
         InitializeComponent()
 
-        ' Add any initialization after the InitializeComponent() call.
-        'observableToolPositionState = Observable.Return(Of ToolPositionState)(New ToolPositionState(New PointF(1, 1), New PointF(2, 2)))
-
-        'observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(Of IObserver(Of ToolPositionState), IDisposable)())()()
-
-        'observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(ByVal observer As IObserver(Of ToolPositionState))
-        '                                                                          Return Disposable.Create(Sub() Debug.WriteLine("Observer has unsubscribed"))
+        'observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(o)
+        '                                                                          _subscribed.Add(o)
+        '                                                                          Return Function() _subscribed.Remove(o)
         '                                                                      End Function)
-
-        observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(o)
-                                                                                  _subscribed.Add(o)
-                                                                                  Return Function() _subscribed.Remove(o)
-                                                                              End Function)
-
-
-        'observableToolPositionState = Observable.Create(Of ToolPositionState)(Function(ByVal observer As IObserver(Of ToolPositionState))
-        '                                                                          observer.OnNext(New ToolPositionState(New PointF(1, 1), New PointF(2, 2)))
-        '                                                                          observer.OnCompleted()
-        '                                                                          Return Disposable.Create(Sub() Debug.WriteLine("Observer has unsubscribed"))
-        '                                                                      End Function)
-
-        'Dim uiSchedDispatcher As IScheduler = Scheduler.Dispatcher
 
     End Sub
 
@@ -69,15 +58,6 @@ Public Class frmMain
         oTimer = New Timer(CInt(txtTimerInterval.Text))
         oTimer.AutoReset = True
         AddHandler oTimer.Elapsed, AddressOf HandleTimer
-
-        'Dim timerTicks = Observable.FromEventPattern(Of ElapsedEventHandler, ElapsedEventArgs) _
-        '(Sub(h) AddHandler oTimer.Elapsed, h,
-        ' Sub(h) RemoveHandler oTimer.Elapsed, h)
-
-        'Dim timerTicks As IObservable(Of Reactive.EventPattern(Of ElapsedEventArgs)) =
-        '    Observable.FromEventPattern(Of ElapsedEventHandler, ElapsedEventArgs) _
-        '(Sub(h) AddHandler oTimer.Elapsed, h,
-        ' Sub(h) RemoveHandler oTimer.Elapsed, h)
 
         oTimer.Start()
 
@@ -107,13 +87,15 @@ Public Class frmMain
 
         RaiseEvent ToolPositionStateChange(Me, oToolPositionState)
 
-        ' This is a problem here, because _subscribed isn't type safe. 
+        ' This is a problem here, because _subscribed isn't thread safe. 
         ' In any case, this raises a series of events, which 
         ' seems more complex than just raising one. Still working on 
         ' understanding reactive, observable, etc. Not many examples in VB - Mostly C#. 
-        For Each o In _subscribed
-            o.OnNext(oToolPositionState)
-        Next
+        'For Each o In _subscribed
+        '    o.OnNext(oToolPositionState)
+        'Next
+
+        observableToolPositionState.OnNext(oToolPositionState)
 
     End Sub
 
@@ -135,43 +117,6 @@ Public Class frmMain
     Private Sub btnLaunchRxMiniMap_Click(sender As Object, e As EventArgs) Handles btnLaunchRxMiniMap.Click
         Dim frmMap = New frmRxMiniMap(observableToolPositionState)
         frmMap.Show()
-    End Sub
-
-    Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-
-        'Dim slowMouse = Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(
-        '    Sub(ev) AddHandler Me.MouseMove, ev,
-        '    Sub(ev) RemoveHandler Me.MouseMove, ev).
-        '    Select(Function(x) x.EventArgs).Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Slw: {0},{1}", x.X, x.Y))
-
-        'Dim medMouse As IObservable(Of EventPattern(Of MouseEventArgs)) =
-        '    Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs) _
-        '(Sub(h) AddHandler MouseMove, h,
-        ' Sub(h) RemoveHandler MouseMove, h) _
-        ' .Select(Of EventPattern(Of MouseEventArgs))(Function(x) x.EventArgs) _
-        ' .Sample(TimeSpan.FromMilliseconds(250)) _
-        ' .Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", x.EventArgs.X, x.EventArgs.Y)
-
-        'Dim slowMouse As IObservable(Of EventPattern(Of MouseEventArgs)) = Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)(Me, "MouseMove")
-
-        'Dim slowMouse As IObservable(Of EventPattern(Of MouseEventArgs)) = Observable.FromEventPattern(Of MouseEventHandler, MouseEventArgs)()
-
-        '(Sub(h) AddHandler Me.MouseMove, h,
-        ' Sub(h) RemoveHandler Me.MouseMove, h)
-
-        'Dim slowMousePos = slowMouse.Select(Function(x) x.EventArgs)
-        'slowMousePos.Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Slow: {0},{1}", x.X, x.Y))
-
-
-        '.Select(Of MouseEventArgs)(Function(x) x.EventArgs) _
-        ' .Sample(TimeSpan.FromMilliseconds(250)) _
-        ' .Subscribe(Function(x) lblMouseMedium.Text = String.Format("Mouse Med: {0},{1}", x.EventArgs.X, x.EventArgs.Y)
-
-
-        ' Reactive.MainThreadScheduler = Scheduler.CurrentThread
-
-
     End Sub
 
     Private Sub frmMain_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
@@ -217,9 +162,17 @@ Public Class frmMain
             Sample(TimeSpan.FromMilliseconds(1000)).
             ObserveOn(Me).
             Subscribe(Sub(oMouseEventArgs)
-                          'Raise 1SecondEvent
                           lblMouseSlow.Text = String.Format("Mouse Slow: {0},{1}", oMouseEventArgs.X, oMouseEventArgs.Y)
                       End Sub)
 
     End Sub
 End Class
+
+'Dim timerTicks = Observable.FromEventPattern(Of ElapsedEventHandler, ElapsedEventArgs) _
+'(Sub(h) AddHandler oTimer.Elapsed, h,
+' Sub(h) RemoveHandler oTimer.Elapsed, h)
+
+'Dim timerTicks As IObservable(Of Reactive.EventPattern(Of ElapsedEventArgs)) =
+'    Observable.FromEventPattern(Of ElapsedEventHandler, ElapsedEventArgs) _
+'(Sub(h) AddHandler oTimer.Elapsed, h,
+' Sub(h) RemoveHandler oTimer.Elapsed, h)
