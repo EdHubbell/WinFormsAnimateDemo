@@ -166,6 +166,40 @@ Public Class frmMain
                       End Sub)
 
     End Sub
+
+    Private Sub btnTestBitwiseLogic_Click(sender As Object, e As EventArgs) Handles btnTestBitwiseLogic.Click
+
+        Try
+
+            Dim iValue As Integer = 1
+            Dim iBit As Integer = 1
+
+
+            iValue = CInt(txtValue.Text)
+            iBit = CInt(txtBit.Text)
+
+
+            For i As Integer = 0 To 7
+                iBit = CInt(2 ^ i)
+
+                Dim sVal As String = "hdshd"
+                sVal = IsBitSet(iValue, iBit).ToString
+                lblBitSet.Text = sVal
+            Next
+
+            lblBitSet.Text = IsBitSet(iValue, iBit).ToString
+
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+
+
+    End Sub
+
+    Public Function IsBitSet(ByVal aValue As Long, ByVal aBit As Long) As Boolean
+        Return ((aValue And aBit) = aBit)
+    End Function
+
 End Class
 
 'Dim timerTicks = Observable.FromEventPattern(Of ElapsedEventHandler, ElapsedEventArgs) _

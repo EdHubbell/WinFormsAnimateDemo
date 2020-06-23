@@ -35,6 +35,10 @@ Partial Class frmMain
         Me.lblMouseSlow = New System.Windows.Forms.Label()
         Me.lblMouseEvent = New System.Windows.Forms.Label()
         Me.btnAddRxMouse = New System.Windows.Forms.Button()
+        Me.btnTestBitwiseLogic = New System.Windows.Forms.Button()
+        Me.txtBit = New System.Windows.Forms.TextBox()
+        Me.txtValue = New System.Windows.Forms.TextBox()
+        Me.lblBitSet = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'btnLaunchMiniMap
@@ -145,18 +149,56 @@ Partial Class frmMain
         '
         'btnAddRxMouse
         '
-        Me.btnAddRxMouse.Location = New System.Drawing.Point(343, 310)
+        Me.btnAddRxMouse.Location = New System.Drawing.Point(343, 273)
         Me.btnAddRxMouse.Name = "btnAddRxMouse"
         Me.btnAddRxMouse.Size = New System.Drawing.Size(159, 23)
         Me.btnAddRxMouse.TabIndex = 12
         Me.btnAddRxMouse.Text = "Add Rx Mouse Events"
         Me.btnAddRxMouse.UseVisualStyleBackColor = True
         '
+        'btnTestBitwiseLogic
+        '
+        Me.btnTestBitwiseLogic.Location = New System.Drawing.Point(284, 350)
+        Me.btnTestBitwiseLogic.Name = "btnTestBitwiseLogic"
+        Me.btnTestBitwiseLogic.Size = New System.Drawing.Size(159, 23)
+        Me.btnTestBitwiseLogic.TabIndex = 13
+        Me.btnTestBitwiseLogic.Text = "Test Bitwise Logic"
+        Me.btnTestBitwiseLogic.UseVisualStyleBackColor = True
+        '
+        'txtBit
+        '
+        Me.txtBit.Location = New System.Drawing.Point(520, 351)
+        Me.txtBit.Name = "txtBit"
+        Me.txtBit.Size = New System.Drawing.Size(65, 22)
+        Me.txtBit.TabIndex = 15
+        Me.txtBit.Text = "2"
+        '
+        'txtValue
+        '
+        Me.txtValue.Location = New System.Drawing.Point(449, 351)
+        Me.txtValue.Name = "txtValue"
+        Me.txtValue.Size = New System.Drawing.Size(65, 22)
+        Me.txtValue.TabIndex = 14
+        Me.txtValue.Text = "254"
+        '
+        'lblBitSet
+        '
+        Me.lblBitSet.AutoSize = True
+        Me.lblBitSet.Location = New System.Drawing.Point(591, 355)
+        Me.lblBitSet.Name = "lblBitSet"
+        Me.lblBitSet.Size = New System.Drawing.Size(28, 13)
+        Me.lblBitSet.TabIndex = 16
+        Me.lblBitSet.Text = "true"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(644, 399)
+        Me.Controls.Add(Me.lblBitSet)
+        Me.Controls.Add(Me.txtBit)
+        Me.Controls.Add(Me.txtValue)
+        Me.Controls.Add(Me.btnTestBitwiseLogic)
         Me.Controls.Add(Me.btnAddRxMouse)
         Me.Controls.Add(Me.lblMouseEvent)
         Me.Controls.Add(Me.lblMouseSlow)
@@ -191,4 +233,8 @@ Partial Class frmMain
     Friend WithEvents lblMouseSlow As Label
     Friend WithEvents lblMouseEvent As Label
     Friend WithEvents btnAddRxMouse As Button
+    Friend WithEvents btnTestBitwiseLogic As Button
+    Friend WithEvents txtBit As TextBox
+    Friend WithEvents txtValue As TextBox
+    Friend WithEvents lblBitSet As Label
 End Class
